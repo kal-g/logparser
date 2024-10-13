@@ -12,11 +12,16 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.window.registerWebviewViewProvider(LogParserPatternViewProvider.viewType, provider));
 }
 
+// This method is called when your extension is deactivated
+export function deactivate() { }
+
 function parseLogs() {
     let te = vscode.window.activeTextEditor;
     if (te == undefined) {
         return;
     }
+    // TODO Create a map of tag -> lines
+    // TODO Add section to html and make visible on parse, populated with buttons from tags
     te.edit(builder => {
         const doc = te!.document;
         //builder.replace(new vscode.Range(doc.lineAt(0).range.start, doc.lineAt(doc.lineCount - 1).range.end), "Hello world!");
@@ -27,12 +32,11 @@ function parseLogs() {
     });
 }
 
-// This method is called when your extension is deactivated
-export function deactivate() { }
-
 class LogParserPatternViewProvider implements vscode.WebviewViewProvider {
     public static readonly viewType = 'logparser-pattern';
     public view?: vscode.WebviewView;
+
+    // TODO Move parselogs here
 
     public resolveWebviewView(
         webviewView: vscode.WebviewView,
@@ -50,7 +54,7 @@ class LogParserPatternViewProvider implements vscode.WebviewViewProvider {
             switch (message.command) {
                 case 'parse':
                     {
-                        vscode.window.showErrorMessage("Received parse command");
+                        parseLogs();
                         break;
                     }
             }
@@ -58,7 +62,6 @@ class LogParserPatternViewProvider implements vscode.WebviewViewProvider {
     }
 
     private _getHtml() {
-        // TODO Text input for regexp
         return `<!DOCTYPE html>
 			<html lang="en">
 			<body>
